@@ -149,7 +149,7 @@ class Component
 	{
 		if (this.isHidden)
 			return;
-		else if (this.children == null)
+		else if (this.children.length == 0)
 			Component.visibleParts.add(this);
 		else
 		{
