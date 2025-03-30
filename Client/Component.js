@@ -25,7 +25,24 @@ class Component
 		this.vertexBuffer = 0;
 		// Color vector.
 		this.color = null;
-		// Matrix that transforms this component relative to the global coordinate system's origin.
+		/*
+			Matrix that transforms this component relative to the global coordinate system. It is a product
+			of a rotation and translation matrix. This product is computed on the server.
+			Rotation matrix:
+			[
+				r0, r1, r2, 0
+				r3, r4, r5, 0
+				r6, r7, r8, 0
+				0, 0, 0, 1
+			]
+			Translation matrix:
+			[
+				1, 0, 0, Δx
+				0, 1, 0, Δy
+				0, 0, 1, Δz
+				0, 0, 0, 1
+			]
+		*/
 		this.transform = null;
 		// Name in the feature tree.
 		this.name = null;
@@ -175,9 +192,13 @@ class Component
 	#setTransform()
 	{
 		this.transform = mat4.create();
-		for (var i = 0; i < 16; i++)
+		for (var i = 0; i < 12; i++)
 			this.transform[i] = Component.#dataView.getFloat32(Component.#index + i * 4);
-		Component.#index += 64;
+		this.transform[12] = 0;
+		this.transform[13] = 0;
+		this.transform[14] = 0;
+		this.transform[15] = 1;
+		Component.#index += 48;
 	}
 	// Sets the hidden state using the data view.
 	#setHiddenState()
@@ -214,7 +235,7 @@ class Component
 		name length: unsigned char (1 byte)
 		name: signed char (1 - 255 bytes)
 		color: unsigned integer (4 bytes)
-		transform: array of floats (64 bytes)
+		transform: array of floats (48 bytes)
 		isHidden: boolean (1 byte)
 		children length: unsigned short (2 bytes)
 		children: array of components
