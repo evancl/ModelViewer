@@ -171,7 +171,7 @@ class ModelViewer
 		while (node != null)
 		{
 			this.context.bindVertexArray(node.value.vertexArray);
-			this.context.uniformMatrix4fv(this.model, false, node.value.modelTransform);
+			this.context.uniformMatrix4fv(this.model, false, node.value.transform);
 			this.context.uniform4fv(this.vertexColor, node.value.color)
 			this.context.drawArrays(this.context.TRIANGLES, 0, 3);
 			node = node.next;

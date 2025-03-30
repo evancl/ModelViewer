@@ -25,12 +25,8 @@ class Component
 		this.vertexBuffer = 0;
 		// Color vector.
 		this.color = null;
-		// Position. An array of floating point numbers.
-		this.position = null;
-		// Matrix that transforms this component relative to its parent.
-		this.relativeTransform = null;
-		// Matrix that transforms this component relative to the global coordinate system.
-		this.modelTransform = null;
+		// Matrix that transforms this component relative to the global coordinate system's origin.
+		this.transform = null;
 		// Name in the feature tree.
 		this.name = null;
 		// Indicates if this component is hidden.
@@ -130,12 +126,8 @@ class Component
 		}
 		if (properties.hasOwnProperty("color"))
 			this.color = properties["color"];
-		if (properties.hasOwnProperty("position"))
-			this.position = properties["position"];
-		if (properties.hasOwnProperty("relativeTransform"))
-			this.relativeTransform = properties["relativeTransform"];
-		if (properties.hasOwnProperty("modelTransform"))
-			this.modelTransform = properties["modelTransform"];
+		if (properties.hasOwnProperty("transform"))
+			this.transform = properties["transform"];
 		if (properties.hasOwnProperty("isHidden"))
 		{
 			this.isHidden = properties["isHidden"];
@@ -179,22 +171,13 @@ class Component
 			this.color[i] = Component.#dataView.getUint8(Component.#index + i) / 255.0;
 		Component.#index += 4;
 	}
-	// Sets the position using the data view.
-	#setPosition()
+	// Sets the transform using the data view.
+	#setTransform()
 	{
-		this.position = vec3.create();
-		for (var i = 0; i < 3; i++)
-			this.position[i] = Component.#dataView.getFloat32(Component.#index + i * 4);
-		Component.#index += 12;
-	}
-	// Gets the transform using the data view.
-	#getTransform()
-	{
-		const transform = mat4.create();
+		this.transform = mat4.create();
 		for (var i = 0; i < 16; i++)
-			transform[i] = Component.#dataView.getFloat32(Component.#index + i * 4);
+			this.transform[i] = Component.#dataView.getFloat32(Component.#index + i * 4);
 		Component.#index += 64;
-		return transform;
 	}
 	// Sets the hidden state using the data view.
 	#setHiddenState()
@@ -218,9 +201,7 @@ class Component
 		component.#setModelID();
 		component.#setName();
 		component.#setColor();
-		component.#setPosition();
-		this.relativeTransform = component.#getTransform();
-		this.modelTransform = component.#getTransform();
+		component.#setTransform();
 		component.#setHiddenState();
 		component.#setChildren();
 		return component;
@@ -233,9 +214,7 @@ class Component
 		name length: unsigned char (1 byte)
 		name: signed char (1 - 255 bytes)
 		color: unsigned integer (4 bytes)
-		position: array of floats (12 bytes)
-		relativeTransform: array of floats (64 bytes)
-		modelTransform: array of floats (64 bytes)
+		transform: array of floats (64 bytes)
 		isHidden: boolean (1 byte)
 		children length: unsigned short (2 bytes)
 		children: array of components
