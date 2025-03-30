@@ -113,7 +113,7 @@ class Component
 		{
 			if (this.children[i].name == name)
 			{
-				if (#index == -1)
+				if (index == -1)
 					return this.children[i];
 				else
 					return this.children[i].getChild(path.substring(index + 1));
@@ -144,7 +144,11 @@ class Component
 		if (properties.hasOwnProperty("color"))
 			this.color = properties["color"];
 		if (properties.hasOwnProperty("transform"))
-			this.transform = properties["transform"];
+		{
+			transform = properties["transform"];
+			for (var i = 0; i < 12; i++)
+				this.transform[i] = transform[i];
+		}
 		if (properties.hasOwnProperty("isHidden"))
 		{
 			this.isHidden = properties["isHidden"];

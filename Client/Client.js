@@ -33,8 +33,5 @@ function main()
 	);
 	// Render loop.
 	while (true)
-	{
-		// Add a timeout?
 		modelViewer.render();
-	}
 }
